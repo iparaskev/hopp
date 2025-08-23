@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"fmt"
-	"renkey-backend/internal/common"
+	"hopp-backend/internal/common"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"

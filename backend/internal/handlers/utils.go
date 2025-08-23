@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"fmt"
+	"hopp-backend/internal/common"
+	"hopp-backend/internal/models"
 	"io"
 	"net/http"
-	"renkey-backend/internal/common"
-	"renkey-backend/internal/models"
 	"time"
 
 	"github.com/labstack/echo/v4"

@@ -4,8 +4,8 @@
   "description": "Monorepo package",
   "main": "index.js",
   "private": true,
-  "repository": "git@github.com:konsalex/renkey.git",
-  "author": "Costa <costa@gethopp.app>",
+  "repository": "git@github.com:gethopp/hopp.git",
+  "author": "Hopp team <info@gethopp.app>",
   "license": "AGPL-3.0-only",
   "scripts": {
     "generate-openapi-types": "yarn generate-openapi-types:web-app && yarn generate-openapi-types:tauri",

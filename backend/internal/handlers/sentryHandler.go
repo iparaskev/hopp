@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"renkey-backend/internal/config"
+	"hopp-backend/internal/config"
 
 	"github.com/getsentry/sentry-go"
 	sentryecho "github.com/getsentry/sentry-go/echo"

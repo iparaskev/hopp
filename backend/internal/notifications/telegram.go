@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"hopp-backend/internal/config"
 	"net/http"
-	"renkey-backend/internal/config"
 )
 
 // SendTelegramNotification sends a message to the configured Telegram chat using the Bot API.

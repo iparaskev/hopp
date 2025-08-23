@@ -3,7 +3,7 @@ package messages
 import (
 	"encoding/json"
 	"fmt"
-	"renkey-backend/internal/common"
+	"hopp-backend/internal/common"
 )
 
 // MessageType represents the type of WebSocket message

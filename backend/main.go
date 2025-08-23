@@ -1,8 +1,8 @@
 package main
 
 import (
-	"renkey-backend/internal/config"
-	"renkey-backend/internal/server"
+	"hopp-backend/internal/config"
+	"hopp-backend/internal/server"
 
 	"github.com/labstack/gommon/log"
 )

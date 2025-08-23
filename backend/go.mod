@@ -1,4 +1,4 @@
-module renkey-backend
+module hopp-backend
 
 go 1.24.4
 

@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  title: Renkey API
-  description: API specification for Renkey backend services
+  title: Hopp API
+  description: API specification for Hopp backend services
   version: 1.0.0
 
 servers:

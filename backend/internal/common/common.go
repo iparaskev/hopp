@@ -1,8 +1,8 @@
 package common
 
 import (
-	"renkey-backend/internal/config"
-	"renkey-backend/internal/email"
+	"hopp-backend/internal/config"
+	"hopp-backend/internal/email"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"

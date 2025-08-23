@@ -2,8 +2,8 @@ package email
 
 import (
 	"fmt"
+	"hopp-backend/internal/models"
 	"os"
-	"renkey-backend/internal/models"
 	"strings"
 
 	"github.com/labstack/echo/v4"

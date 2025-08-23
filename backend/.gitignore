@@ -24,7 +24,7 @@ go.work.sum
 # env file
 .env
 
-# Renkey specific
+# Hopp specific
 
 docker_data
 dev.db
