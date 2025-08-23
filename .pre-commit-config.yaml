@@ -1,0 +1,44 @@
+repos:
+  - repo: local
+    hooks:
+      - id: cargo_fmt
+        name: cargo fmt
+        language: system
+        entry: |
+          bash -c '
+          STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep "\.rs$")
+          for FILE in $STAGED_FILES; do
+            if [[ $FILE == core/* ]]; then
+              cd core && cargo fmt && cd - > /dev/null;
+            elif [[ $FILE == tauri/src-tauri/* ]]; then
+              cd tauri/src-tauri && cargo fmt && cd - > /dev/null;
+            fi;
+          done
+          '
+        pass_filenames: false
+        types: [rust]
+        files: \.rs$
+      - id: prettier
+        name: prettier
+        language: system
+        entry: bash -c "yarn pretty-quick --staged"
+        types: [ts, tsx]
+        files: \.(ts|tsx)$
+      - id: check_localhost_in_webapp
+        name: Check for localhost in web-app.html
+        language: system
+        entry: |
+          bash -c '
+          if grep -i "API_BASE_URL:\"localhost:1926\"" backend/web/web-app.html; then
+            echo "ERROR: Found localhost reference in backend/web/web-app.html"
+            exit 1
+          fi
+          '
+        files: backend/web/web-app\.html$
+        pass_filenames: false
+
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v1.64.7
+    hooks:
+      - id: golangci-lint
+        entry: bash -c 'cd backend && golangci-lint run --timeout=5m --config ../.golangcli.yml'

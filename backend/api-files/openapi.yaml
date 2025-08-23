@@ -1,0 +1,515 @@
+openapi: 3.0.3
+info:
+  title: Renkey API
+  description: API specification for Renkey backend services
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+components:
+  schemas:
+    BaseUser:
+      type: object
+      required:
+        - id
+        - first_name
+        - last_name
+        - email
+        - team_name
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        first_name:
+          type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
+        team_name:
+          type: string
+        avatar_url:
+          type: string
+          nullable: true
+        is_admin:
+          type: boolean
+          default: false
+        is_active:
+          type: boolean
+          description: Whether the user is currently active (connected via websocket)
+        team_id:
+          type: integer
+          format: uint
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+
+    PrivateUser:
+      allOf:
+        - $ref: "#/components/schemas/BaseUser"
+        - type: object
+          properties:
+            social_metadata:
+              type: object
+              additionalProperties: true
+              nullable: true
+            metadata:
+              type: object
+              additionalProperties: true
+              nullable: true
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+paths:
+  /api/health:
+    get:
+      summary: Health check endpoint
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "OK"
+
+  /api/metrics:
+    get:
+      summary: Prometheus metrics endpoint
+      responses:
+        "200":
+          description: Metrics in Prometheus format
+
+  /api/auth/social/:provider:
+    get:
+      summary: Initiate social login with specified provider
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [google, slack]
+      responses:
+        "302":
+          description: Redirect to provider's login page
+
+  /api/auth/social/:provider/callback:
+    get:
+      summary: Social login callback endpoint
+      parameters:
+        - name: provider
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [google, slack]
+      responses:
+        "200":
+          description: Successful authentication
+        "401":
+          description: Authentication failed
+
+  /api/sign-up:
+    post:
+      summary: Manual sign up endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - first_name
+                - last_name
+                - email
+                - password
+              properties:
+                first_name:
+                  type: string
+                  description: User's first name
+                last_name:
+                  type: string
+                  description: User's last name
+                email:
+                  type: string
+                  format: email
+                  description: User's email address
+                password:
+                  type: string
+                  format: password
+                  description: User's password
+                team_name:
+                  type: string
+                  description: Name of the team (required unless team_invite_uuid is provided)
+                team_invite_uuid:
+                  type: string
+                  format: uuid
+                  description: UUID for team invitation (if joining an existing team)
+      responses:
+        "200":
+          description: Successfully signed up
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: JWT authentication token
+                  user:
+                    $ref: "#/components/schemas/PrivateUser"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: User with this email already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/auth/authenticate-app:
+    get:
+      summary: Create JWT token for desktop app
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Successfully authenticated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/auth/user:
+    get:
+      summary: Get current user details
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: User details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrivateUser"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/auth/teammates:
+    get:
+      summary: Get current user's teammates
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: List of teammates retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BaseUser"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/auth/websocket:
+    get:
+      summary: WebSocket connection endpoint
+      security:
+        - BearerAuth: []
+      responses:
+        "101":
+          description: Switching protocols to WebSocket
+        "401":
+          description: Unauthorized
+
+  /api/auth/update-user-name:
+    put:
+      summary: Update user's first and last name
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - first_name
+                - last_name
+              properties:
+                first_name:
+                  type: string
+                  description: User's first name
+                last_name:
+                  type: string
+                  description: User's last name
+      responses:
+        "200":
+          description: Name updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrivateUser"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/auth/get-invite-uuid:
+    get:
+      summary: Get or create a team invitation UUID
+      description: Returns a UUID that can be used to invite users to the team. If the existing invitation has expired, a new one is created.
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Team invitation UUID retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  invite_uuid:
+                    type: string
+                    format: uuid
+                    description: UUID for team invitation
+                  team_name:
+                    type: string
+                    description: Name of the team
+        "400":
+          description: User is not part of any team
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/auth/send-team-invites:
+    post:
+      summary: Send team invitation emails
+      description: Sends invitation emails to a list of email addresses to join the user's team
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - invitees
+              properties:
+                invitees:
+                  type: array
+                  items:
+                    type: string
+                    format: email
+                  description: List of email addresses to invite
+      responses:
+        "200":
+          description: Invitations sent successfully
+        "400":
+          description: Invalid request or user is not part of any team
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/auth/metadata/onboarding-form:
+    post:
+      summary: Update onboarding form status
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Onboarding form status updated successfully
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/invitation-details/{uuid}:
+    get:
+      summary: Get team details for an invitation
+      description: Returns information about the team associated with an invitation UUID
+      parameters:
+        - name: uuid
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Team details retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: Name of the team the user is invited to join
+                  team_id:
+                    type: integer
+                    format: uint
+                    description: ID of the team the user is invited to join
+        "400":
+          description: Invalid invitation UUID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "404":
+          description: Invitation not found or has expired
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /api/auth/watercooler:
+    get:
+      summary: Get LiveKit tokens for joining the team's watercooler room
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: LiveKit tokens retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  audioToken:
+                    type: string
+                  videoToken:
+                    type: string
+                  participant:
+                    type: string
+                required:
+                  - audioToken
+                  - videoToken
+                  - participant
+
+  /api/auth/watercooler/anonymous:
+    get:
+      summary: Get a link that will have an encoded token that will be used
+      description: Get a link that will have an encoded token that will be used
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: Link with encoded token retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  redirect_url:
+                    type: string
+                    description: Redirect URL with encoded token
+
+  /api/auth/livekit/server-url:
+    get:
+      summary: Get the LiveKit server url
+      description: Get the LiveKit server url
+      security:
+        - BearerAuth: []
+      responses:
+        "200":
+          description: LiveKit server url
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url:
+                    type: string
+                    description: LiveKit server url
