@@ -22,7 +22,7 @@ A quick way to verify your changes would be to run `task build_dev` and then run
 For example:
 
 ```bash
-task build_dev
+task dev
 # From a different terminal
 cd tests/
 cargo run -- cursor move
