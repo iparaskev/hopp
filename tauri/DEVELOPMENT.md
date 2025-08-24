@@ -53,13 +53,13 @@ task dev-server
 Either from the the top folder or from the tauri folder, you can run the following command to start the app:
 
 ```bash
-task tauri:dev
+task app:dev
 ```
 
 For debugging you can spawn a clone of the app with the following command:
 
 ```bash
-task tauri:start-replica-app
+task app:start-replica-app
 ```
 
 ## Exposing the backend and the livekit server

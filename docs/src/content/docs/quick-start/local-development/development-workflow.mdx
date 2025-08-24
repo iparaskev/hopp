@@ -19,27 +19,24 @@ task backend:create-certs
 
 # Start Docker containers for PostgreSQL and Redis
 task backend:compose-up
-
-# Add mock data to the database
-task backend:add-mock-data
 ```
 
-The mock data adds test users to the database, by default it adds `michael@dundermifflin.com` and `dwight@dundermifflin.com`.
-
 After the initial setup, **start the backend with the local LiveKit server**:
+You can change the server's configuration in the `backend/env-files/.env.local` file.
 
 ```bash
 task dev-server
 ```
 
-You can change the server's configuration in the `env-files/.env.local` file.
+On your initial run, you can add mock data test users to the database, by default it adds `michael@dundermifflin.com` and `dwight@dundermifflin.com`.
+
 
 ## Tauri App Development
 
 Then you can start the Tauri desktop application:
 
 ```bash
-task tauri:dev
+task app:dev
 ```
 
 You can get an authentication token with:
@@ -57,7 +54,7 @@ To connect then you need to paste the generated token inside the `Debug` screen 
 For debugging purposes, you can spawn a clone of the app:
 
 ```bash
-task tauri:start-replica-app
+task app:start-replica-app
 ```
 
 And generated a token for `Dwight` user with command:
