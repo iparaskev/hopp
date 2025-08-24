@@ -44,6 +44,11 @@ Hopp is an open source pair programming app that allows you to pair program with
 - [Official Documentation](https://docs.gethopp.app)
 - [Core process docs](/core/README.md)
 
+## 💻 Local development
+
+- [Prerequisites](https://docs.gethopp.app/quick-start/local-development/prerequisites/)
+- [Development workflow](https://docs.gethopp.app/quick-start/local-development/development-workflow/)
+
 ## 🌐 Community & Support
 
 - Join our [Discord community](https://discord.gg/TKRpS3aMn9)
