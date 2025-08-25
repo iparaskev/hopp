@@ -16,6 +16,8 @@ Hopp is an open source pair programming app that allows you to pair program with
 - **⚡ Super high quality screen sharing**
   - [We optimised WebRTC](https://gethopp.app/blog/latency-exploration) to get the best quality screen sharing
   - [Rely on LiveKit's network](https://docs.livekit.io/home/cloud/architecture/#distributed-mesh-architecture) for low latency at scale
+- **👥👥 Mob programming**
+  - Join a room and start pairing immediately with up to 10 teammates
 - **🔗 One click pairing**
   - No more sharing links with your teammates on chat
 - **🪟 Built in the open**
