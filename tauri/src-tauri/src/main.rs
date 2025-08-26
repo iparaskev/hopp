@@ -20,7 +20,7 @@ use hopp::{
     AppData,
 };
 use std::sync::Mutex;
-use std::{env, sync::Arc};
+use std::sync::Arc;
 
 #[cfg(target_os = "macos")]
 use std::time::Duration;
