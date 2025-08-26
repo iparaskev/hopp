@@ -38,10 +38,6 @@ jobs:
     needs: check-files
     if: ${{ needs.check-files.outputs.tauri-changed == 'true' || github.event_name == 'workflow_dispatch' }}
 
-    defaults:
-      run:
-        working-directory: core
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -55,6 +51,7 @@ jobs:
           toolchain: stable
 
       - name: Run rustfmt
+        working-directory: tauri/src-tauri
         run: cargo fmt --all -- --check
 
   build:
@@ -71,14 +68,9 @@ jobs:
             target: x86_64-apple-darwin
           - os: macos-latest
             target: aarch64-apple-darwin
-
-    defaults:
-      run:
-        working-directory: tauri/src-tauri
-
+        
     env:
       SENTRY_DSN_RUST: ""
-      VITE_LIVEKIT_SERVER_URL: ""
 
     steps:
       - name: Checkout code
@@ -139,7 +131,9 @@ jobs:
           touch target/debug/hopp_core-${{ matrix.target }}$EXT
 
       - name: Build
+        working-directory: tauri/src-tauri
         run: cargo build --release --target ${{ matrix.target }}
 
       - name: Lint (clippy)
+        working-directory: tauri/src-tauri
         run: cargo clippy --target ${{ matrix.target }} --all-features -- -D warnings
