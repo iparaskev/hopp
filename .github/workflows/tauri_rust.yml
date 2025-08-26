@@ -114,7 +114,6 @@ jobs:
       - name: Install frontend dependencies
         shell: bash
         run: |
-          cd source-repo
           yarn install
 
       - name: Create hopp_core release
