@@ -45,6 +45,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
@@ -78,7 +81,11 @@ jobs:
       VITE_LIVEKIT_SERVER_URL: ""
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Install Rust
         uses: actions-rs/toolchain@v1
