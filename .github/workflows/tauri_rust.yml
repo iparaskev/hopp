@@ -96,6 +96,7 @@ jobs:
 
       - name: Create hopp_core release
         working-directory: core
+        shell: bash
         run: |
           mkdir -p target/release
           EXT=""
@@ -106,6 +107,7 @@ jobs:
 
       - name: Create hopp_core debug
         working-directory: core
+        shell: bash
         run: |
           mkdir -p target/debug
           EXT=""
