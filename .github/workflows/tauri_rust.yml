@@ -28,7 +28,7 @@ jobs:
         uses: dorny/paths-filter@v3
         id: filter
         with:
-          base: ${{ github.event.workflow_run.head_sha }}^
+          base: ${{ github.event.workflow_run.base_sha }}
           filters: |
             tauri:
               - 'tauri/src-tauri/**'
