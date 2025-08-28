@@ -85,6 +85,17 @@ jobs:
       - name: Cache Cargo builds
         uses: Swatinem/rust-cache@v2
 
+      - name: Create hopp_core debug
+        working-directory: core
+        shell: bash
+        run: |
+          mkdir -p target/debug
+          EXT=""
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            EXT=".exe"
+          fi
+          touch target/debug/hopp_core-${{ matrix.target }}$EXT
+          
       - name: Run clippy
         working-directory: tauri/src-tauri
         run: cargo clippy --all-targets --all-features -- -D warnings
@@ -144,17 +155,6 @@ jobs:
             EXT=".exe"
           fi
           touch target/release/hopp_core-${{ matrix.target }}$EXT
-
-      - name: Create hopp_core debug
-        working-directory: core
-        shell: bash
-        run: |
-          mkdir -p target/debug
-          EXT=""
-          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            EXT=".exe"
-          fi
-          touch target/debug/hopp_core-${{ matrix.target }}$EXT
 
       - name: Build
         working-directory: tauri/src-tauri
